@@ -13,7 +13,7 @@
             ]
         }
     },
-    "postCreateCommand": "cargo check",
+    "postCreateCommand": "cargo build --features egui",
     "remoteEnv": {
         "WINIT_UNIX_BACKEND": "x11"
     },
