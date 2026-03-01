@@ -32,4 +32,14 @@ Once your cloud lab is open and ready, sign here:
 | **Lead (Dragon)** | **snowcamo** | [ ] Verified |
 
 ---
+
+## 🆘 TROUBLESHOOTING: "RECOVERY MODE"
+If you see a message saying **"This codespace is currently running in recovery mode"**:
+1. Don't worry! This happens if the computer in the sky got confused during setup.
+2. Press **`Ctrl + Shift + P`** on your keyboard.
+3. Type **"Rebuild"** in the box that appears.
+4. Select **"Codespaces: Rebuild Container"**.
+5. Wait for it to finish! It should work perfectly now.
+
+---
 *Ready for Lesson 3? We're going to talk to the computer!*
