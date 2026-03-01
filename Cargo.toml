@@ -1,0 +1,39 @@
+[package]
+name = "bevy-3d-renderer"
+version = "0.1.0"
+edition = "2021"
+authors = ["snowcamo <djmsqrvve@gmail.com>"]
+description = "3D Renderer prototype for Dota 2 hero models with animation playback"
+license = "MIT"
+repository = "https://github.com/djmsqrvve/helix_3d_render_prototype"
+keywords = ["bevy", "3d", "renderer", "gltf", "animation"]
+categories = ["game-development", "graphics", "rendering"]
+
+[[bin]]
+name = "bevy-3d-renderer"
+path = "src/main.rs"
+
+[dependencies]
+bevy = { version = "0.18", features = ["bevy_gltf", "png"] }
+bevy_egui = { version = "0.39.1", optional = true }
+clap = { version = "4.5", features = ["derive"] }
+image = { version = "0.25", default-features = false, features = ["png"] }
+chrono = "0.4"
+
+# Logging
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "json", "time"] }
+
+[features]
+default = []
+egui = ["dep:bevy_egui"]
+
+[profile.dev]
+opt-level = 1
+
+[profile.dev.package."*"]
+opt-level = 3
+
+[profile.release]
+opt-level = 3
+lto = true

@@ -1,0 +1,7 @@
+[
+    {
+        "key": "ctrl+alt+g",
+        "command": "git.openOnRemote",
+        "when": "editorTextFocus"
+    }
+]

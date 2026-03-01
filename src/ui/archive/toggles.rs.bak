@@ -1,0 +1,143 @@
+use bevy::prelude::*;
+
+use super::format_accessory_name;
+use crate::components::*;
+use crate::constants::ACCESSORIES;
+
+/// Spawn UI checkboxes for toggling accessories
+pub fn spawn_accessory_toggles_ui(
+    mut commands: Commands,
+    mut visibility: ResMut<AccessoryVisibility>,
+    query: Query<Entity, With<AccessoryToggleButton>>,
+) {
+    if visibility.ui_spawned {
+        return;
+    }
+
+    if query.is_empty() && !ACCESSORIES.is_empty() {
+        commands
+            .spawn((
+                Node {
+                    position_type: PositionType::Absolute,
+                    top: Val::Px(180.0),
+                    right: Val::Px(12.0),
+                    width: Val::Auto,
+                    height: Val::Auto,
+                    padding: UiRect::all(Val::Px(8.0)),
+                    flex_direction: FlexDirection::Column,
+                    row_gap: Val::Px(4.0),
+                    ..default()
+                },
+                BackgroundColor(Color::srgba(0.0, 0.0, 0.0, 0.7)),
+            ))
+            .with_children(|parent| {
+                parent.spawn((
+                    Text::new("Accessories:"),
+                    TextColor(Color::srgb(1.0, 1.0, 0.8)),
+                ));
+
+                for (name, _) in ACCESSORIES.iter() {
+                    let display_name = format_accessory_name(name);
+                    let name_clone = name.to_string();
+                    let is_visible = visibility.is_visible(name);
+
+                    // Set initial color based on visibility state
+                    let bg_color = if is_visible {
+                        Color::srgba(0.2, 0.2, 0.2, 0.8)
+                    } else {
+                        Color::srgba(0.4, 0.2, 0.2, 0.8)
+                    };
+                    let checkmark = if is_visible { "[✓] " } else { "[ ] " };
+
+                    parent
+                        .spawn((
+                            Button,
+                            Node {
+                                width: Val::Px(140.0),
+                                height: Val::Px(22.0),
+                                padding: UiRect::left(Val::Px(4.0)),
+                                align_items: AlignItems::Center,
+                                ..default()
+                            },
+                            BackgroundColor(bg_color),
+                            AccessoryToggleButton {
+                                accessory_name: name_clone,
+                            },
+                        ))
+                        .with_children(|btn| {
+                            btn.spawn((
+                                Text::new(checkmark),
+                                TextColor(Color::srgb(0.0, 1.0, 0.0)),
+                            ));
+                            btn.spawn((
+                                Text::new(display_name),
+                                TextColor(Color::srgb(0.9, 0.9, 0.9)),
+                            ));
+                        });
+                }
+            });
+
+        visibility.ui_spawned = true;
+        info!("[UI] Accessory toggle panel spawned");
+    }
+}
+
+/// Handle clicks on accessory toggle buttons
+pub fn handle_accessory_toggle_clicks(
+    mut interaction_query: Query<
+        (
+            &Interaction,
+            &mut BackgroundColor,
+            &AccessoryToggleButton,
+            &Children,
+        ),
+        Changed<Interaction>,
+    >,
+    mut text_query: Query<&mut Text>,
+    mut visibility: ResMut<AccessoryVisibility>,
+) {
+    for (interaction, mut background, button, children) in interaction_query.iter_mut() {
+        match interaction {
+            Interaction::Pressed => {
+                visibility.toggle(&button.accessory_name);
+                let is_visible = visibility.is_visible(&button.accessory_name);
+
+                info!(
+                    "[TOGGLE] {}: {}",
+                    button.accessory_name,
+                    if is_visible { "ON" } else { "OFF" }
+                );
+
+                for child in children.iter() {
+                    if let Ok(mut text) = text_query.get_mut(child) {
+                        let current = text.0.clone();
+                        if current.starts_with('[') {
+                            text.0 = if is_visible {
+                                "[✓] ".to_string()
+                            } else {
+                                "[ ] ".to_string()
+                            };
+                        }
+                    }
+                }
+
+                *background = BackgroundColor(if is_visible {
+                    Color::srgba(0.2, 0.4, 0.2, 0.8)
+                } else {
+                    Color::srgba(0.4, 0.2, 0.2, 0.8)
+                });
+            }
+            Interaction::Hovered => {
+                *background = BackgroundColor(Color::srgba(0.3, 0.3, 0.3, 0.9));
+            }
+            Interaction::None => {
+                let is_visible = visibility.is_visible(&button.accessory_name);
+                *background = BackgroundColor(if is_visible {
+                    Color::srgba(0.2, 0.2, 0.2, 0.8)
+                } else {
+                    Color::srgba(0.3, 0.2, 0.2, 0.8)
+                });
+            }
+        }
+    }
+}
