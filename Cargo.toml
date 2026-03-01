@@ -2,6 +2,7 @@
 name = "bevy-3d-renderer"
 version = "0.1.0"
 edition = "2021"
+rust-version = "1.89.0"
 authors = ["snowcamo <djmsqrvve@gmail.com>"]
 description = "3D Renderer prototype for Dota 2 hero models with animation playback"
 license = "MIT"
