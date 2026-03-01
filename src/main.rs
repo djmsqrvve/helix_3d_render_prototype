@@ -46,7 +46,7 @@ fn main() {
     };
 
     let mut app = App::new();
-    app.add_plugins(DefaultPlugins.set(window_plugin))
+    app.add_plugins(DefaultPlugins.set(window_plugin).disable::<bevy::log::LogPlugin>())
         .insert_resource(ClearColor(Color::srgb(0.1, 0.1, 0.1))) // LESSON 2: CHANGE THIS COLOR!
         .insert_resource(args)
         .insert_resource(AccessoryVisibility::default())
